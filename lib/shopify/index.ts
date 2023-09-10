@@ -17,13 +17,14 @@ import {
   getCollectionsQuery
 } from './queries/collection';
 import { getMenuQuery } from './queries/menu';
-import { getPageQuery, getPagesQuery } from './queries/page';
+import { getBlogQuery, getPageQuery, getPagesQuery } from './queries/page';
 import {
   getProductQuery,
   getProductRecommendationsQuery,
   getProductsQuery
 } from './queries/product';
 import {
+  Blog,
   Cart,
   Collection,
   Connection,
@@ -32,6 +33,7 @@ import {
   Page,
   Product,
   ShopifyAddToCartOperation,
+  ShopifyBlogOperation,
   ShopifyCart,
   ShopifyCartOperation,
   ShopifyCollection,
@@ -72,6 +74,12 @@ export async function shopifyFetch<T>({
   variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
   try {
+    // if (variables?.handle === 'hidden-homepage-carousel') {
+    //   console.log('\n\n************\n', JSON.stringify({
+    //     ...(query && { query }),
+    //     ...(variables && { variables })
+    //   }, null, 2))
+    // }
     const result = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -92,6 +100,10 @@ export async function shopifyFetch<T>({
     if (body.errors) {
       throw body.errors[0];
     }
+
+    // if (variables?.handle === 'hidden-homepage-carousel') {
+    //   console.log("🚀 ~ file: index.ts:104 ~ body:", body)
+    // }
 
     return {
       status: result.status,
@@ -348,7 +360,11 @@ export async function getMenu(handle: string): Promise<Menu[]> {
   return (
     res.body?.data?.menu?.items.map((item: { title: string; url: string }) => ({
       title: item.title,
-      path: item.url.replace(domain, '').replace('/collections', '/search').replace('/pages', '')
+      path: item.url
+        .replace(domain, '')
+        .replace('/collections', '/search')
+        .replace('/pages', '')
+        .replace('/blogs/lifestyle', '/blog')
     })) || []
   );
 }
@@ -368,6 +384,15 @@ export async function getPages(): Promise<Page[]> {
   });
 
   return removeEdgesAndNodes(res.body.data.pages);
+}
+
+export async function getBlog(handle: string): Promise<Blog> {
+  const res = await shopifyFetch<ShopifyBlogOperation>({
+    query: getBlogQuery,
+    variables: { handle }
+  });
+
+  return res.body.data.blog.articleByHandle;
 }
 
 export async function getProduct(handle: string): Promise<Product | undefined> {

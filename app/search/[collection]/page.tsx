@@ -44,6 +44,12 @@ export default async function CategoryPage({
           <ProductGridItems products={products} />
         </Grid>
       )}
+      <p className="mt-16 text-center">
+        Read our blog post about this{' '}
+        <b>
+          <a href={`/blog/${params.collection}`}>collection</a>
+        </b>
+      </p>
     </section>
   );
 }

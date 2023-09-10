@@ -61,6 +61,15 @@ export type Page = {
   updatedAt: string;
 };
 
+export type Blog = {
+  id: string;
+  title: string;
+  handle: string;
+  contentHtml: string;
+  seo?: SEO;
+  image?: Image;
+};
+
 export type Product = Omit<ShopifyProduct, 'variants' | 'images'> & {
   variants: ProductVariant[];
   images: Image[];
@@ -218,6 +227,7 @@ export type ShopifyMenuOperation = {
       items: {
         title: string;
         url: string;
+        type: string;
       }[];
     };
   };
@@ -228,6 +238,11 @@ export type ShopifyMenuOperation = {
 
 export type ShopifyPageOperation = {
   data: { pageByHandle: Page };
+  variables: { handle: string };
+};
+
+export type ShopifyBlogOperation = {
+  data: { blog: { articleByHandle: Blog } };
   variables: { handle: string };
 };
 

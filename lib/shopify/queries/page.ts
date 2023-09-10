@@ -1,3 +1,4 @@
+import imageFragment from '../fragments/image';
 import seoFragment from '../fragments/seo';
 
 const pageFragment = /* GraphQL */ `
@@ -25,6 +26,26 @@ export const getPageQuery = /* GraphQL */ `
     }
   }
   ${pageFragment}
+`;
+
+export const getBlogQuery = /* GraphQL */ `
+  query getBlog($handle: String!) {
+    blog(handle: "lifestyle") {
+      articleByHandle(handle: $handle) {
+        title
+        contentHtml
+        image {
+          ...image
+        }
+        seo {
+          ...seo
+        }
+      }
+    }
+  }
+
+  ${seoFragment}
+  ${imageFragment}
 `;
 
 export const getPagesQuery = /* GraphQL */ `
